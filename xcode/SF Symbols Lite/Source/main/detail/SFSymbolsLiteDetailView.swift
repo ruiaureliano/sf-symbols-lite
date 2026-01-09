@@ -31,6 +31,8 @@ struct SFSymbolsLiteDetailView: View {
 	@State private var effectVariableColorInactiveLayers: SFSymbolsLiteDetailEffectVariableColorInactiveLayers = .dim
 	@State private var effectVariableColorReversing: Bool = false
 	@State private var effectVariableColor: Color = .black
+	@State private var effectReplaceWith: String = ""
+	@State private var effectPreferMagicReplace: Bool = false
 	@State private var effectCount: Int?
 	@State private var effectDelay: Double?
 	@State private var effectID: UUID = UUID()
@@ -69,6 +71,7 @@ struct SFSymbolsLiteDetailView: View {
 					.detailSection()
 
 					SFSymbolsLiteDetailAnimationView(
+						symbols: $symbols,
 						effect: $effect,
 						effectAnimate: $effectAnimate,
 						effectRepeat: $effectRepeat,
@@ -78,6 +81,8 @@ struct SFSymbolsLiteDetailView: View {
 						effectVariableColorInactiveLayers: $effectVariableColorInactiveLayers,
 						effectVariableColorReversing: $effectVariableColorReversing,
 						effectVariableColor: $effectVariableColor,
+						effectReplaceWith: $effectReplaceWith,
+						effectPreferMagicReplace: $effectPreferMagicReplace,
 						effectCount: $effectCount,
 						effectDelay: $effectDelay,
 						effectPlay: $effectPlay,
@@ -138,5 +143,13 @@ struct SFSymbolsLiteDetailView: View {
 			}
 		}
 		.frame(minWidth: 700)
+		.onAppear {
+			if effectReplaceWith.isEmpty {
+				effectReplaceWith = symbol.name
+			}
+		}
+		.onChange(of: symbol.name) {
+			effectReplaceWith = symbol.name
+		}
 	}
 }

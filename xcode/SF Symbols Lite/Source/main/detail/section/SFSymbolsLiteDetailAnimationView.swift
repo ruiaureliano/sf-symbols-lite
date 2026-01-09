@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SFSymbolsLiteDetailAnimationView: View {
 
+	@Binding var symbols: Set<Symbol>
 	@Binding var effect: SFSymbolsLiteDetailEffectAnimation
 	@Binding var effectAnimate: SFSymbolsLiteDetailEffectAnimate
 	@Binding var effectRepeat: SFSymbolsLiteDetailEffectRepeat
@@ -11,12 +12,15 @@ struct SFSymbolsLiteDetailAnimationView: View {
 	@Binding var effectVariableColorInactiveLayers: SFSymbolsLiteDetailEffectVariableColorInactiveLayers
 	@Binding var effectVariableColorReversing: Bool
 	@Binding var effectVariableColor: Color
+	@Binding var effectReplaceWith: String
+	@Binding var effectPreferMagicReplace: Bool
 	@Binding var effectCount: Int?
 	@Binding var effectDelay: Double?
 	@Binding var effectPlay: Bool
 	@Binding var effectID: UUID
 
 	@AppStorage("SFSymbolsLiteDetailAnimationViewIsExpanded") private var isExpanded: Bool = false
+	@State private var showReplacePopover: Bool = false
 
 	var body: some View {
 
@@ -95,6 +99,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.breathe.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.breathe)
 							Text(SFSymbolsLiteDetailEffectAnimation.pulse.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.pulse)
 							Text(SFSymbolsLiteDetailEffectAnimation.variableColor.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.variableColor)
+							Text(SFSymbolsLiteDetailEffectAnimation.replace.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.replace)
+							Divider()
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -207,6 +213,49 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 					}
 
+					if effect == .replace {
+						HStack {
+							Image(systemName: "arrow.left.arrow.right")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("With")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Button {
+								showReplacePopover = true
+							} label: {
+								HStack(spacing: 4) {
+									Text(replaceDisplayText)
+										.lineLimit(1)
+									Image(systemName: "chevron.down")
+										.font(.system(size: 10, weight: .semibold))
+										.foregroundStyle(.secondary)
+								}
+							}
+							.buttonStyle(.plain)
+							.popover(isPresented: $showReplacePopover, arrowEdge: .top) {
+								SFSymbolsLitePopoverSymbolsView(symbols: $symbols, selectedSymbol: $effectReplaceWith)
+							}
+							.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectReplaceWith) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+					}
+
 					if showsAnimateOptions {
 						HStack {
 							Image(systemName: "square.3.layers.3d.down.right")
@@ -272,6 +321,38 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 						.detailInsideSection()
 						.onChange(of: effectDirection) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+					}
+
+					if effect == .replace {
+						HStack {
+							Image(systemName: "wand.and.stars")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Prefer Magic Replace")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Toggle("", isOn: $effectPreferMagicReplace)
+								.toggleStyle(.switch)
+								.controlSize(.small)
+								.labelsHidden()
+								.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectPreferMagicReplace) {
 							Task { @MainActor in
 								effectPlay = false
 								effectID = UUID()
@@ -434,6 +515,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return [.default, .localized, .fixed]
 		case .rotate:
 			return [.default, .clockwise, .counterclockwise]
+		case .replace:
+			return [.downUp, .upUp, .offUp]
 		case .appear, .bounce, .scale:
 			return [.down, .up]
 		case .breathe, .pulse, .variableColor, .drawOn:
@@ -447,6 +530,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return .default
 		case .rotate:
 			return .default
+		case .replace:
+			return .downUp
 		case .appear, .bounce, .scale:
 			return .up
 		case .breathe, .pulse, .variableColor, .drawOn:
@@ -460,10 +545,21 @@ struct SFSymbolsLiteDetailAnimationView: View {
 
 	private var usesDirection: Bool {
 		switch effect {
-		case .appear, .bounce, .scale, .wiggle, .rotate:
+		case .appear, .bounce, .scale, .wiggle, .rotate, .replace:
 			return true
 		case .breathe, .pulse, .variableColor, .drawOn:
 			return false
 		}
+	}
+
+	private var replaceDisplayText: String {
+		if effectReplaceWith.isEmpty {
+			return "Select Symbol"
+		}
+		let glyph = symbols.first(where: { $0.name == effectReplaceWith })?.glyph ?? ""
+		if glyph.isEmpty {
+			return effectReplaceWith
+		}
+		return "\(glyph) \(effectReplaceWith)"
 	}
 }

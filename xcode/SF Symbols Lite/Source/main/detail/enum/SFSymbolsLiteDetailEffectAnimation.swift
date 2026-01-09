@@ -11,6 +11,7 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 	case breathe = "Breathe"
 	case pulse = "Pulse"
 	case variableColor = "Variable Color"
+	case replace = "Replace"
 
 	var available: SFSymbolsLiteDetailEffectAnimationAvailable? {
 		switch self {
@@ -31,6 +32,8 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 		case .pulse:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		case .variableColor:
+			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
+		case .replace:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		}
 	}
