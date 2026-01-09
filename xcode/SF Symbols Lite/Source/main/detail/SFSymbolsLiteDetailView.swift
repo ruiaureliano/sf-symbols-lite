@@ -22,6 +22,15 @@ struct SFSymbolsLiteDetailView: View {
 	@Binding var color2: Color
 	@Binding var color3: Color
 
+	@State private var effect: SFSymbolsLiteDetailEffectAnimation = .appear
+	@State private var effectAnimate: SFSymbolsLiteDetailEffectAnimate = .symbol
+	@State private var effectRepeat: SFSymbolsLiteDetailEffectRepeat = .once
+	@State private var effectDirection: SFSymbolsLiteDetailEffectDirection = .up
+	@State private var effectCount: Int?
+	@State private var effectDelay: Double?
+	@State private var effectID: UUID = UUID()
+	@State private var effectPlay: Bool = false
+
 	var body: some View {
 		ZStack {
 			if symbol != .null, symbol.filteredSearch(search) && symbol.filteredFavorites(favorites) && symbol.filteredCategory(category) && symbol.filteredTags(tags) {
@@ -51,6 +60,18 @@ struct SFSymbolsLiteDetailView: View {
 						color1: $color1,
 						color2: $color2,
 						color3: $color3
+					)
+					.detailSection()
+
+					SFSymbolsLiteDetailAnimationView(
+						effect: $effect,
+						effectAnimate: $effectAnimate,
+						effectRepeat: $effectRepeat,
+						effectDirection: $effectDirection,
+						effectCount: $effectCount,
+						effectDelay: $effectDelay,
+						effectPlay: $effectPlay,
+						effectID: $effectID
 					)
 					.detailSection()
 
