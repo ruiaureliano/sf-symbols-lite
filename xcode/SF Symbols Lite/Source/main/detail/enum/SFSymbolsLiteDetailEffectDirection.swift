@@ -4,4 +4,7 @@ enum SFSymbolsLiteDetailEffectDirection: String, Codable, CaseIterable, Hashable
 
 	case up = "Up"
 	case down = "Down"
+	case `default` = "Default"
+	case localized = "Localized"
+	case fixed = "Fixed"
 }

@@ -80,14 +80,20 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 
 						Picker("", selection: $effect) {
-							ForEach(SFSymbolsLiteDetailEffectAnimation.allCases, id: \.self) { effect in
-								Text(effect.rawValue).tag(effect)
-							}
+							Text(SFSymbolsLiteDetailEffectAnimation.appear.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.appear)
+							Text(SFSymbolsLiteDetailEffectAnimation.drawOn.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.drawOn)
+							Divider()
+							Text(SFSymbolsLiteDetailEffectAnimation.bounce.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.bounce)
+							Text(SFSymbolsLiteDetailEffectAnimation.scale.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.scale)
+							Text(SFSymbolsLiteDetailEffectAnimation.wiggle.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.wiggle)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
-								if effect == .appear, effectAnimate == .individually {
+								if usesDirection, effectAnimate == .individually {
 									effectAnimate = .symbol
+								}
+								if usesDirection, !directionOptions.contains(effectDirection) {
+									effectDirection = defaultDirection
 								}
 								effectPlay = false
 								effectID = UUID()
@@ -96,26 +102,101 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						.pickerStyle(.menu)
 						.frame(width: 100, alignment: .trailing)
 
-						if effectPlay && effectRepeat != .once {
-							Button("􀛷") {
+						if effectRepeat != .once {
+							Button {
+								Task { @MainActor in
+									effectPlay.toggle()
+									effectID = UUID()
+								}
+							} label: {
+								Text("􀛷")
+									.frame(width: 20, alignment: .center)
+							}
+							.padding(.trailing, 10)
+						} else if effectPlay {
+							Button {
 								Task { @MainActor in
 									effectPlay = false
 									effectID = UUID()
 								}
+							} label: {
+								Text("􀛷")
+									.frame(width: 20, alignment: .center)
 							}
 							.padding(.trailing, 10)
 						} else {
-							Button("􀊄") {
+							Button {
 								Task { @MainActor in
 									effectPlay = true
 									effectID = UUID()
 								}
+							} label: {
+								Text("􀊄")
+									.frame(width: 20, alignment: .center)
 							}
 							.padding(.trailing, 10)
 						}
 
 					}
 					.detailInsideSection()
+
+					HStack {
+						Image(systemName: "repeat")
+							.resizable()
+							.scaledToFit()
+							.frame(width: 16, height: 16)
+							.foregroundStyle(.primary)
+							.padding(.leading, 10)
+							.padding(.vertical, 10)
+
+						Text("Repeat")
+							.font(.body)
+							.fontWeight(.regular)
+							.foregroundStyle(.primary)
+
+						Spacer()
+
+						HStack(spacing: 6) {
+							Picker("", selection: $effectRepeat) {
+								ForEach(SFSymbolsLiteDetailEffectRepeat.allCases, id: \.self) { repeatMode in
+									Text(repeatMode.rawValue).tag(repeatMode)
+								}
+							}
+							.labelsHidden()
+							.pickerStyle(.menu)
+							.frame(width: 160, alignment: .trailing)
+
+							if effectRepeat == .repeatDelay {
+								ZStack(alignment: .trailing) {
+									TextField("", value: delaySeconds, format: .number.precision(.fractionLength(0)))
+										.frame(width: 36)
+										.textFieldStyle(.roundedBorder)
+
+									Text("s")
+										.foregroundStyle(.secondary)
+										.padding(.trailing, 8)
+								}
+								.frame(width: 44, alignment: .trailing)
+
+								Stepper("", value: delaySeconds, in: 0...60, step: 1)
+									.labelsHidden()
+									.fixedSize()
+									.controlSize(.mini)
+							}
+						}
+						.frame(width: effectRepeat == .repeatDelay ? 240 : 160, alignment: .trailing)
+						.padding(.trailing, 10)
+					}
+					.detailInsideSection()
+					.onChange(of: effectRepeat) {
+						Task { @MainActor in
+							if effectRepeat == .repeatDelay, effectDelay == nil {
+								effectDelay = 0
+							}
+							effectPlay = false
+							effectID = UUID()
+						}
+					}
 
 					HStack {
 						Image(systemName: "square.3.layers.3d.down.right")
@@ -151,7 +232,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 					}
 
-					if effect == .appear {
+					if usesDirection {
 						HStack {
 							Image(systemName: "arrow.up.arrow.down")
 								.resizable()
@@ -169,7 +250,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Spacer()
 
 							Picker("", selection: $effectDirection) {
-								ForEach(SFSymbolsLiteDetailEffectDirection.allCases, id: \.self) { direction in
+								ForEach(directionOptions, id: \.self) { direction in
 									Text(direction.rawValue).tag(direction)
 								}
 							}
@@ -192,10 +273,47 @@ struct SFSymbolsLiteDetailAnimationView: View {
 	}
 
 	private var animateOptions: [SFSymbolsLiteDetailEffectAnimate] {
-		if effect == .appear {
-			return SFSymbolsLiteDetailEffectAnimate.allCases.filter { $0 != .individually }
+		usesDirection
+			? SFSymbolsLiteDetailEffectAnimate.allCases.filter { $0 != .individually }
+			: SFSymbolsLiteDetailEffectAnimate.allCases
+	}
+
+	private var delaySeconds: Binding<Double> {
+		Binding(
+			get: { effectDelay ?? 0 },
+			set: { effectDelay = max(0, $0.rounded()) }
+		)
+	}
+
+	private var directionOptions: [SFSymbolsLiteDetailEffectDirection] {
+		switch effect {
+		case .wiggle:
+			return [.default, .localized, .fixed]
+		case .appear, .bounce, .scale:
+			return [.down, .up]
+		case .drawOn:
+			return []
 		}
-		return SFSymbolsLiteDetailEffectAnimate.allCases
+	}
+
+	private var defaultDirection: SFSymbolsLiteDetailEffectDirection {
+		switch effect {
+		case .wiggle:
+			return .default
+		case .appear, .bounce, .scale:
+			return .up
+		case .drawOn:
+			return .up
+		}
+	}
+
+	private var usesDirection: Bool {
+		switch effect {
+		case .appear, .bounce, .scale, .wiggle:
+			return true
+		case .drawOn:
+			return false
+		}
 	}
 
 }
