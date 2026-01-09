@@ -86,6 +86,9 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
+								if effect == .appear, effectAnimate == .individually {
+									effectAnimate = .symbol
+								}
 								effectPlay = false
 								effectID = UUID()
 							}
@@ -131,7 +134,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						Spacer()
 
 						Picker("", selection: $effectAnimate) {
-							ForEach(SFSymbolsLiteDetailEffectAnimate.allCases, id: \.self) { animate in
+							ForEach(animateOptions, id: \.self) { animate in
 								Text(animate.rawValue).tag(animate)
 							}
 						}
@@ -148,42 +151,51 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 					}
 
-					HStack {
-						Image(systemName: "arrow.up.arrow.down")
-							.resizable()
-							.scaledToFit()
-							.frame(width: 16, height: 16)
-							.foregroundStyle(.primary)
-							.padding(.leading, 10)
-							.padding(.vertical, 10)
+					if effect == .appear {
+						HStack {
+							Image(systemName: "arrow.up.arrow.down")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
 
-						Text("Direction")
-							.font(.body)
-							.fontWeight(.regular)
-							.foregroundStyle(.primary)
+							Text("Direction")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
 
-						Spacer()
+							Spacer()
 
-						Picker("", selection: $effectDirection) {
-							ForEach(SFSymbolsLiteDetailEffectDirection.allCases, id: \.self) { direction in
-								Text(direction.rawValue).tag(direction)
+							Picker("", selection: $effectDirection) {
+								ForEach(SFSymbolsLiteDetailEffectDirection.allCases, id: \.self) { direction in
+									Text(direction.rawValue).tag(direction)
+								}
 							}
+							.labelsHidden()
+							.pickerStyle(.radioGroup)
+							.horizontalRadioGroupLayout()
+							.padding(.trailing, 10)
 						}
-						.labelsHidden()
-						.pickerStyle(.radioGroup)
-						.horizontalRadioGroupLayout()
-						.padding(.trailing, 10)
-					}
-					.detailInsideSection()
-					.onChange(of: effectDirection) {
-						Task { @MainActor in
-							effectPlay = false
-							effectID = UUID()
+						.detailInsideSection()
+						.onChange(of: effectDirection) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private var animateOptions: [SFSymbolsLiteDetailEffectAnimate] {
+		if effect == .appear {
+			return SFSymbolsLiteDetailEffectAnimate.allCases.filter { $0 != .individually }
+		}
+		return SFSymbolsLiteDetailEffectAnimate.allCases
 	}
 
 }
