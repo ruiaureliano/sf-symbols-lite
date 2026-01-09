@@ -26,6 +26,7 @@ struct SFSymbolsLiteDetailView: View {
 	@State private var effectAnimate: SFSymbolsLiteDetailEffectAnimate = .symbol
 	@State private var effectRepeat: SFSymbolsLiteDetailEffectRepeat = .once
 	@State private var effectDirection: SFSymbolsLiteDetailEffectDirection = .up
+	@State private var effectPulses: Bool = false
 	@State private var effectCount: Int?
 	@State private var effectDelay: Double?
 	@State private var effectID: UUID = UUID()
@@ -68,6 +69,7 @@ struct SFSymbolsLiteDetailView: View {
 						effectAnimate: $effectAnimate,
 						effectRepeat: $effectRepeat,
 						effectDirection: $effectDirection,
+						effectPulses: $effectPulses,
 						effectCount: $effectCount,
 						effectDelay: $effectDelay,
 						effectPlay: $effectPlay,

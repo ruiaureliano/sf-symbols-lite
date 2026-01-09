@@ -6,6 +6,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 	@Binding var effectAnimate: SFSymbolsLiteDetailEffectAnimate
 	@Binding var effectRepeat: SFSymbolsLiteDetailEffectRepeat
 	@Binding var effectDirection: SFSymbolsLiteDetailEffectDirection
+	@Binding var effectPulses: Bool
 	@Binding var effectCount: Int?
 	@Binding var effectDelay: Double?
 	@Binding var effectPlay: Bool
@@ -87,6 +88,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.scale.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.scale)
 							Text(SFSymbolsLiteDetailEffectAnimation.wiggle.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.wiggle)
 							Text(SFSymbolsLiteDetailEffectAnimation.rotate.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.rotate)
+                            Text(SFSymbolsLiteDetailEffectAnimation.breathe.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.breathe)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -268,6 +270,38 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							}
 						}
 					}
+
+					if effect == .breathe {
+						HStack {
+							Image(systemName: "waveform.path.ecg")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Pulses")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Toggle("", isOn: $effectPulses)
+								.toggleStyle(.switch)
+								.controlSize(.small)
+								.labelsHidden()
+								.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectPulses) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+					}
 				}
 			}
 		}
@@ -294,7 +328,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return [.default, .clockwise, .counterclockwise]
 		case .appear, .bounce, .scale:
 			return [.down, .up]
-		case .drawOn:
+		case .breathe, .drawOn:
 			return []
 		}
 	}
@@ -307,7 +341,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return .default
 		case .appear, .bounce, .scale:
 			return .up
-		case .drawOn:
+		case .breathe, .drawOn:
 			return .up
 		}
 	}
@@ -316,9 +350,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 		switch effect {
 		case .appear, .bounce, .scale, .wiggle, .rotate:
 			return true
-		case .drawOn:
+		case .breathe, .drawOn:
 			return false
 		}
 	}
-
 }

@@ -8,6 +8,7 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 	case scale = "Scale"
 	case wiggle = "Wiggle"
 	case rotate = "Rotate"
+	case breathe = "Breathe"
 
 	var available: SFSymbolsLiteDetailEffectAnimationAvailable? {
 		switch self {
@@ -23,6 +24,8 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "18.0", macOS: "15.0", watchOS: "11.0", tvOS: "18.0", visionOS: "2.0")
 		case .rotate:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "18.0", macOS: "15.0", watchOS: "11.0", tvOS: "18.0", visionOS: "2.0")
+		case .breathe:
+			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		}
 	}
 }
