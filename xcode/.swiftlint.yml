@@ -11,8 +11,8 @@ function_body_length:
   warning: 80
 
 type_body_length:
-  error: 400
-  warning: 400
+  error: 600
+  warning: 600
 
 cyclomatic_complexity:
   error: 30

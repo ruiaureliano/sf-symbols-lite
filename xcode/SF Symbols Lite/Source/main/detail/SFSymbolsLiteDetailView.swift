@@ -27,6 +27,10 @@ struct SFSymbolsLiteDetailView: View {
 	@State private var effectRepeat: SFSymbolsLiteDetailEffectRepeat = .once
 	@State private var effectDirection: SFSymbolsLiteDetailEffectDirection = .up
 	@State private var effectPulses: Bool = false
+	@State private var effectVariableColorStyle: SFSymbolsLiteDetailEffectVariableColorStyle = .cumulative
+	@State private var effectVariableColorInactiveLayers: SFSymbolsLiteDetailEffectVariableColorInactiveLayers = .dim
+	@State private var effectVariableColorReversing: Bool = false
+	@State private var effectVariableColor: Color = .black
 	@State private var effectCount: Int?
 	@State private var effectDelay: Double?
 	@State private var effectID: UUID = UUID()
@@ -70,6 +74,10 @@ struct SFSymbolsLiteDetailView: View {
 						effectRepeat: $effectRepeat,
 						effectDirection: $effectDirection,
 						effectPulses: $effectPulses,
+						effectVariableColorStyle: $effectVariableColorStyle,
+						effectVariableColorInactiveLayers: $effectVariableColorInactiveLayers,
+						effectVariableColorReversing: $effectVariableColorReversing,
+						effectVariableColor: $effectVariableColor,
 						effectCount: $effectCount,
 						effectDelay: $effectDelay,
 						effectPlay: $effectPlay,

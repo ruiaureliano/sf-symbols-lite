@@ -7,6 +7,10 @@ struct SFSymbolsLiteDetailAnimationView: View {
 	@Binding var effectRepeat: SFSymbolsLiteDetailEffectRepeat
 	@Binding var effectDirection: SFSymbolsLiteDetailEffectDirection
 	@Binding var effectPulses: Bool
+	@Binding var effectVariableColorStyle: SFSymbolsLiteDetailEffectVariableColorStyle
+	@Binding var effectVariableColorInactiveLayers: SFSymbolsLiteDetailEffectVariableColorInactiveLayers
+	@Binding var effectVariableColorReversing: Bool
+	@Binding var effectVariableColor: Color
 	@Binding var effectCount: Int?
 	@Binding var effectDelay: Double?
 	@Binding var effectPlay: Bool
@@ -90,6 +94,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.rotate.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.rotate)
 							Text(SFSymbolsLiteDetailEffectAnimation.breathe.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.breathe)
 							Text(SFSymbolsLiteDetailEffectAnimation.pulse.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.pulse)
+							Text(SFSymbolsLiteDetailEffectAnimation.variableColor.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.variableColor)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -104,7 +109,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							}
 						}
 						.pickerStyle(.menu)
-						.frame(width: 100, alignment: .trailing)
+						.frame(width: 140, alignment: .trailing)
 
 						if effectRepeat != .once {
 							Button {
@@ -202,37 +207,39 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 					}
 
-					HStack {
-						Image(systemName: "square.3.layers.3d.down.right")
-							.resizable()
-							.scaledToFit()
-							.frame(width: 16, height: 16)
-							.foregroundStyle(.primary)
-							.padding(.leading, 10)
-							.padding(.vertical, 10)
+					if showsAnimateOptions {
+						HStack {
+							Image(systemName: "square.3.layers.3d.down.right")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
 
-						Text("Animate")
-							.font(.body)
-							.fontWeight(.regular)
-							.foregroundStyle(.primary)
+							Text("Animate")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
 
-						Spacer()
+							Spacer()
 
-						Picker("", selection: $effectAnimate) {
-							ForEach(animateOptions, id: \.self) { animate in
-								Text(animate.rawValue).tag(animate)
+							Picker("", selection: $effectAnimate) {
+								ForEach(animateOptions, id: \.self) { animate in
+									Text(animate.rawValue).tag(animate)
+								}
 							}
+							.labelsHidden()
+							.pickerStyle(.radioGroup)
+							.horizontalRadioGroupLayout()
+							.padding(.trailing, 10)
 						}
-						.labelsHidden()
-						.pickerStyle(.radioGroup)
-						.horizontalRadioGroupLayout()
-						.padding(.trailing, 10)
-					}
-					.detailInsideSection()
-					.onChange(of: effectAnimate) {
-						Task { @MainActor in
-							effectPlay = false
-							effectID = UUID()
+						.detailInsideSection()
+						.onChange(of: effectAnimate) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
 						}
 					}
 
@@ -303,6 +310,106 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							}
 						}
 					}
+
+					if effect == .variableColor {
+						HStack {
+							Image(systemName: "paintbrush")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Style")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Picker("", selection: $effectVariableColorStyle) {
+								ForEach(SFSymbolsLiteDetailEffectVariableColorStyle.allCases, id: \.self) { style in
+									Text(style.rawValue).tag(style)
+								}
+							}
+							.labelsHidden()
+							.pickerStyle(.radioGroup)
+							.horizontalRadioGroupLayout()
+							.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectVariableColorStyle) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+
+						HStack {
+							Image(systemName: "circle.grid.3x3.fill")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Inactive Layers")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Picker("", selection: $effectVariableColorInactiveLayers) {
+								ForEach(SFSymbolsLiteDetailEffectVariableColorInactiveLayers.allCases, id: \.self) { mode in
+									Text(mode.rawValue).tag(mode)
+								}
+							}
+							.labelsHidden()
+							.pickerStyle(.radioGroup)
+							.horizontalRadioGroupLayout()
+							.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectVariableColorInactiveLayers) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+
+						HStack {
+							Image(systemName: "arrow.triangle.2.circlepath")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Reversing")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Toggle("", isOn: $effectVariableColorReversing)
+								.toggleStyle(.switch)
+								.controlSize(.small)
+								.labelsHidden()
+								.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectVariableColorReversing) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+					}
 				}
 			}
 		}
@@ -329,7 +436,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return [.default, .clockwise, .counterclockwise]
 		case .appear, .bounce, .scale:
 			return [.down, .up]
-		case .breathe, .pulse, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn:
 			return []
 		}
 	}
@@ -342,16 +449,20 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return .default
 		case .appear, .bounce, .scale:
 			return .up
-		case .breathe, .pulse, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn:
 			return .up
 		}
+	}
+
+	private var showsAnimateOptions: Bool {
+		effect != .variableColor
 	}
 
 	private var usesDirection: Bool {
 		switch effect {
 		case .appear, .bounce, .scale, .wiggle, .rotate:
 			return true
-		case .breathe, .pulse, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn:
 			return false
 		}
 	}
