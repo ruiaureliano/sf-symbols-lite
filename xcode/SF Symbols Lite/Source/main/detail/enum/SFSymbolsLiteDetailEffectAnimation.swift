@@ -12,6 +12,8 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 	case pulse = "Pulse"
 	case variableColor = "Variable Color"
 	case replace = "Replace"
+	case drawOff = "Draw Off"
+	case disappear = "Disappear"
 
 	var available: SFSymbolsLiteDetailEffectAnimationAvailable? {
 		switch self {
@@ -28,12 +30,16 @@ enum SFSymbolsLiteDetailEffectAnimation: String, Codable, CaseIterable, Hashable
 		case .rotate:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "18.0", macOS: "15.0", watchOS: "11.0", tvOS: "18.0", visionOS: "2.0")
 		case .breathe:
-			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
+			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "18.0", macOS: "15.0", watchOS: "11.0", tvOS: "18.0", visionOS: "2.0")
 		case .pulse:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		case .variableColor:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		case .replace:
+			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
+		case .drawOff:
+			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "26.0", macOS: "26.0", watchOS: "26.0", tvOS: "26.0", visionOS: nil)
+		case .disappear:
 			return SFSymbolsLiteDetailEffectAnimationAvailable(iOS: "17.0", macOS: "14.0", watchOS: "10.0", tvOS: "17.0", visionOS: "1.0")
 		}
 	}

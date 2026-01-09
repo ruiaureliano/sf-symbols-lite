@@ -14,6 +14,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 	@Binding var effectVariableColor: Color
 	@Binding var effectReplaceWith: String
 	@Binding var effectPreferMagicReplace: Bool
+	@Binding var effectReverse: Bool
 	@Binding var effectCount: Int?
 	@Binding var effectDelay: Double?
 	@Binding var effectPlay: Bool
@@ -101,6 +102,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.variableColor.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.variableColor)
 							Text(SFSymbolsLiteDetailEffectAnimation.replace.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.replace)
 							Divider()
+							Text(SFSymbolsLiteDetailEffectAnimation.drawOff.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.drawOff)
+							Text(SFSymbolsLiteDetailEffectAnimation.disappear.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.disappear)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -360,6 +363,38 @@ struct SFSymbolsLiteDetailAnimationView: View {
 						}
 					}
 
+					if effect == .drawOff {
+						HStack {
+							Image(systemName: "arrow.uturn.left")
+								.resizable()
+								.scaledToFit()
+								.frame(width: 16, height: 16)
+								.foregroundStyle(.primary)
+								.padding(.leading, 10)
+								.padding(.vertical, 10)
+
+							Text("Reverse")
+								.font(.body)
+								.fontWeight(.regular)
+								.foregroundStyle(.primary)
+
+							Spacer()
+
+							Toggle("", isOn: $effectReverse)
+								.toggleStyle(.switch)
+								.controlSize(.small)
+								.labelsHidden()
+								.padding(.trailing, 10)
+						}
+						.detailInsideSection()
+						.onChange(of: effectReverse) {
+							Task { @MainActor in
+								effectPlay = false
+								effectID = UUID()
+							}
+						}
+					}
+
 					if effect == .breathe {
 						HStack {
 							Image(systemName: "waveform.path.ecg")
@@ -517,9 +552,9 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return [.default, .clockwise, .counterclockwise]
 		case .replace:
 			return [.downUp, .upUp, .offUp]
-		case .appear, .bounce, .scale:
+		case .appear, .bounce, .scale, .disappear:
 			return [.down, .up]
-		case .breathe, .pulse, .variableColor, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn, .drawOff:
 			return []
 		}
 	}
@@ -532,9 +567,9 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return .default
 		case .replace:
 			return .downUp
-		case .appear, .bounce, .scale:
+		case .appear, .bounce, .scale, .disappear:
 			return .up
-		case .breathe, .pulse, .variableColor, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn, .drawOff:
 			return .up
 		}
 	}
@@ -545,9 +580,9 @@ struct SFSymbolsLiteDetailAnimationView: View {
 
 	private var usesDirection: Bool {
 		switch effect {
-		case .appear, .bounce, .scale, .wiggle, .rotate, .replace:
+		case .appear, .bounce, .scale, .wiggle, .rotate, .replace, .disappear:
 			return true
-		case .breathe, .pulse, .variableColor, .drawOn:
+		case .breathe, .pulse, .variableColor, .drawOn, .drawOff:
 			return false
 		}
 	}

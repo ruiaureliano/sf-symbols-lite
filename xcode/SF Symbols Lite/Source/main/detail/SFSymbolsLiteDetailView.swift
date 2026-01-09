@@ -33,6 +33,7 @@ struct SFSymbolsLiteDetailView: View {
 	@State private var effectVariableColor: Color = .black
 	@State private var effectReplaceWith: String = ""
 	@State private var effectPreferMagicReplace: Bool = false
+	@State private var effectReverse: Bool = false
 	@State private var effectCount: Int?
 	@State private var effectDelay: Double?
 	@State private var effectID: UUID = UUID()
@@ -83,6 +84,7 @@ struct SFSymbolsLiteDetailView: View {
 						effectVariableColor: $effectVariableColor,
 						effectReplaceWith: $effectReplaceWith,
 						effectPreferMagicReplace: $effectPreferMagicReplace,
+						effectReverse: $effectReverse,
 						effectCount: $effectCount,
 						effectDelay: $effectDelay,
 						effectPlay: $effectPlay,
