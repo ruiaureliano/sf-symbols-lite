@@ -7,4 +7,6 @@ enum SFSymbolsLiteDetailEffectDirection: String, Codable, CaseIterable, Hashable
 	case `default` = "Default"
 	case localized = "Localized"
 	case fixed = "Fixed"
+	case clockwise = "Clock Wise"
+	case counterclockwise = "Counter Clock Wise"
 }

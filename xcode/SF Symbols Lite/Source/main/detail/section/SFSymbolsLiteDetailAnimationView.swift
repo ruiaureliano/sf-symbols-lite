@@ -86,6 +86,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.bounce.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.bounce)
 							Text(SFSymbolsLiteDetailEffectAnimation.scale.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.scale)
 							Text(SFSymbolsLiteDetailEffectAnimation.wiggle.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.wiggle)
+							Text(SFSymbolsLiteDetailEffectAnimation.rotate.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.rotate)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -289,6 +290,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 		switch effect {
 		case .wiggle:
 			return [.default, .localized, .fixed]
+		case .rotate:
+			return [.default, .clockwise, .counterclockwise]
 		case .appear, .bounce, .scale:
 			return [.down, .up]
 		case .drawOn:
@@ -300,6 +303,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 		switch effect {
 		case .wiggle:
 			return .default
+		case .rotate:
+			return .default
 		case .appear, .bounce, .scale:
 			return .up
 		case .drawOn:
@@ -309,7 +314,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 
 	private var usesDirection: Bool {
 		switch effect {
-		case .appear, .bounce, .scale, .wiggle:
+		case .appear, .bounce, .scale, .wiggle, .rotate:
 			return true
 		case .drawOn:
 			return false
