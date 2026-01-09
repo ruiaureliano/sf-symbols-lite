@@ -88,7 +88,8 @@ struct SFSymbolsLiteDetailAnimationView: View {
 							Text(SFSymbolsLiteDetailEffectAnimation.scale.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.scale)
 							Text(SFSymbolsLiteDetailEffectAnimation.wiggle.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.wiggle)
 							Text(SFSymbolsLiteDetailEffectAnimation.rotate.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.rotate)
-                            Text(SFSymbolsLiteDetailEffectAnimation.breathe.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.breathe)
+							Text(SFSymbolsLiteDetailEffectAnimation.breathe.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.breathe)
+							Text(SFSymbolsLiteDetailEffectAnimation.pulse.rawValue).tag(SFSymbolsLiteDetailEffectAnimation.pulse)
 						}
 						.onChange(of: effect) {
 							Task { @MainActor in
@@ -328,7 +329,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return [.default, .clockwise, .counterclockwise]
 		case .appear, .bounce, .scale:
 			return [.down, .up]
-		case .breathe, .drawOn:
+		case .breathe, .pulse, .drawOn:
 			return []
 		}
 	}
@@ -341,7 +342,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 			return .default
 		case .appear, .bounce, .scale:
 			return .up
-		case .breathe, .drawOn:
+		case .breathe, .pulse, .drawOn:
 			return .up
 		}
 	}
@@ -350,7 +351,7 @@ struct SFSymbolsLiteDetailAnimationView: View {
 		switch effect {
 		case .appear, .bounce, .scale, .wiggle, .rotate:
 			return true
-		case .breathe, .drawOn:
+		case .breathe, .pulse, .drawOn:
 			return false
 		}
 	}
